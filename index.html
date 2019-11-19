@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <script>
+        function initEvent() {
+            var sel = document.getElementById('sel');
+            if (sel.value === '') {
+                sel.value = 'fuga';
+                sel.removeChild(document.getElementById('empty'));
+            }
+        }
+        window.addEventListener('DOMContentLoaded', function(){
+            document.getElementById('sel').addEventListener('touchstart', initEvent);
+            document.getElementById('sel').addEventListener('keydown', initEvent);
+            document.getElementById('sel').addEventListener('mousedown', initEvent);
+        });
+    </script>
+</head>
+<body>
+    <select id="sel">
+        <option id="empty" value="">---</option>
+        <option value="hoge">hoge</option>
+        <option value="fuga">fuga</option>
+        <option value="piyo">piyo</option>
+    </select>
+</body>
+</html>
