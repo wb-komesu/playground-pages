@@ -1,7 +1,7 @@
 /**
  * @module Option
  * @example
- *  const { option, none } = require('Option');
+ *  const { Option, None } = require('Option');
  *  const optionalValue = option(nullable());
  *  const processed =
  *  optionalValue
@@ -206,6 +206,6 @@ function option(value) {
 }
 
 module.exports = {
-  option: option,
-  none: none
+  Option: option,
+  None: none
 };
