@@ -1,7 +1,7 @@
 /**
  * @module Option
  * @example
- *  const { Option, None } = require('Option');
+ *  const { option, none } = require('Option');
  *  const optionalValue = option(nullable());
  *  const processed =
  *  optionalValue
@@ -21,14 +21,7 @@
  */
 
 /**
- * @callback MapFn
- * @template T, R
- * @param {T} value
- * @return {R}
- */
-
-/**
- * @typedef Matcher
+ * @typedef OptionMatcher
  * @template T, R
  * @property {function(T): R} Some
  * @property {function(): R} None
@@ -47,6 +40,7 @@ function None() {}
 None.prototype.getOr = function getOr(defaultValue) {
   return defaultValue;
 };
+
 /**
  * @param {function(): T} callback
  * @return {T}
@@ -54,6 +48,7 @@ None.prototype.getOr = function getOr(defaultValue) {
 None.prototype.getOrElse = function getOrElse(callback) {
   return callback();
 };
+
 /**
  * @param  {function(): Some<T>|None<T>} callback
  * @return {Some<T>|None<T>}
@@ -61,6 +56,7 @@ None.prototype.getOrElse = function getOrElse(callback) {
 None.prototype.orElse = function orElse(callback) {
   return callback();
 };
+
 /**
  * @param _
  * @return {None<T>}
@@ -86,7 +82,7 @@ None.prototype.flatMap = function flatMap(_) {
 
 /**
  * @template R
- * @param {Matcher} matcher
+ * @param {OptionMatcher} matcher
  * @return {R}
  */
 None.prototype.match = function match(matcher) {
@@ -102,12 +98,26 @@ None.prototype.tap = function tap(_) {
 };
 
 /**
+ * @return {boolean}
+ */
+None.prototype.isNone = function isNone() {
+  return true;
+};
+
+/**
+ * @return {boolean}
+ */
+None.prototype.isSome = function isSome() {
+  return false;
+};
+
+/**
  * @template T
  * @param {T} value
  * @constructor
  */
 function Some(value) {
-  this.value = value;
+  this.__value__ = value;
 }
 
 /**
@@ -115,7 +125,7 @@ function Some(value) {
  * @return {T}
  */
 Some.prototype.getOr = function(_) {
-  return this.value;
+  return this.__value__;
 };
 
 /**
@@ -123,7 +133,7 @@ Some.prototype.getOr = function(_) {
  * @return {T}
  */
 Some.prototype.getOrElse = function(_) {
-  return this.value;
+  return this.__value__;
 };
 
 /**
@@ -141,7 +151,7 @@ Some.prototype.orElse = function(_) {
  * @return {Some<R>|None<R>}
  */
 Some.prototype.map = function(transformer) {
-  return option(transformer(this.value));
+  return option(transformer(this.__value__));
 };
 
 /**
@@ -150,8 +160,10 @@ Some.prototype.map = function(transformer) {
  * @return {Some<R>}
  */
 Some.prototype.flatten = function() {
-  if (this.value instanceof Some) {
-    return this.value;
+  const isOption =
+    this.__value__ instanceof Some || this.__value__ instanceof None;
+  if (isOption) {
+    return this.__value__;
   }
   return this;
 };
@@ -169,20 +181,34 @@ Some.prototype.flatMap = function(transformer) {
 /**
  * @template T, R
  * @this {Some<T>}
- * @param {Matcher<T, R>} matcher
+ * @param {OptionMatcher<T, R>} matcher
  * @return {R}
  */
 Some.prototype.match = function(matcher) {
-  return matcher.Some(this.value);
+  return matcher.Some(this.__value__);
 };
 
 /**
- * @param callback
+ * @param {function(T): void} callback
  * @return {Some<T>}
  */
 Some.prototype.tap = function(callback) {
-  callback(this.value);
+  callback(this.__value__);
   return this;
+};
+
+/**
+ * @return {boolean}
+ */
+Some.prototype.isNone = function isNone() {
+  return false;
+};
+
+/**
+ * @return {boolean}
+ */
+Some.prototype.isSome = function isSome() {
+  return true;
 };
 
 /**
